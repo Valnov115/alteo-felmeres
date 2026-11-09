@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>AI a beszerzésben – előzetes felmérés | ALTEO × Beszerzés.hu</title>
+<link rel="icon" href="https://beszerzes.hu/wp-content/uploads/2024/09/beszerzes_favicon.png">
+<style>
+  :root{
+    --navy:#1E3A55; --blue:#1F5F8B; --sky:#4BADE3; --sky-50:#E6F3FB; --sky-100:#CFE8F7;
+    --green:#8BC751; --green-d:#4E8A2A; --green-50:#EEF7E6;
+    --ink:#26323D; --muted:#6B7A88; --line:#D5DDE5; --line-2:#E3E8ED; --bg:#F2F5F8; --white:#fff;
+    --err:#B3261E; --radius:10px;
+    --shadow:0 1px 2px rgba(30,58,85,.06),0 8px 28px rgba(30,58,85,.08);
+    --font-h:Roboto,"Segoe UI",system-ui,-apple-system,Helvetica,Arial,sans-serif;
+    --font-b:"Segoe UI",Roboto,system-ui,-apple-system,Verdana,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--font-b);}
+  a{color:var(--blue)}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+  /* Header */
+  .topbar{background:var(--white);border-bottom:1px solid var(--line-2)}
+  .topbar-in{max-width:820px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .logo{display:flex;align-items:center;text-decoration:none}
+  .logo img{height:40px;width:auto;display:block}
+  .logo .wordmark{display:none;font:700 20px var(--font-h);letter-spacing:.06em;color:var(--blue)}
+  .logo.noimg img{display:none}.logo.noimg .wordmark{display:block}
+  .client{font:500 13px var(--font-h);color:var(--muted);text-align:right;line-height:1.3}
+  .client b{display:block;color:var(--navy);font-size:14px;letter-spacing:.04em}
+  .test-badge{display:none;margin-left:8px;padding:2px 8px;border-radius:99px;background:#FFF4D6;color:#7A5A00;font:600 11px var(--font-h);vertical-align:middle}
+  .is-test .test-badge{display:inline-block}
+
+  /* Progress */
+  .progress-wrap{max-width:820px;margin:0 auto;padding:22px 20px 0}
+  .progress-meta{display:flex;justify-content:space-between;font:500 13px var(--font-h);color:var(--muted);margin-bottom:8px}
+  .progress-meta strong{color:var(--navy)}
+  .bar{height:6px;background:var(--line-2);border-radius:99px;overflow:hidden}
+  .bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--sky),var(--green));border-radius:99px;transition:width .35s ease}
+  .progress-wrap[hidden]{display:none}
+
+  /* Card */
+  main{max-width:820px;margin:0 auto;padding:18px 20px 48px}
+  .card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .step{display:none;padding:32px 36px 28px}
+  .step.active{display:block;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .eyebrow{font:600 12px var(--font-h);letter-spacing:.12em;text-transform:uppercase;color:var(--sky);margin:0 0 6px}
+  h1,h2{font-family:var(--font-h);color:var(--navy);margin:0 0 10px;line-height:1.25}
+  h1{font-size:30px;font-weight:700}
+  h2{font-size:23px;font-weight:700}
+  h1:focus,h2:focus{outline:none}
+  .lead{color:#4A5866;margin:0 0 22px}
+
+  /* Intro hero */
+  .hero{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 70%,#2C7DB3 100%);color:#fff;padding:36px 36px 30px;position:relative;overflow:hidden}
+  .hero:after{content:"";position:absolute;right:-60px;top:-60px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(75,173,227,.45),rgba(75,173,227,0) 70%)}
+  .hero .eyebrow{color:var(--green)}
+  .hero h1{color:#fff}
+  .hero p{margin:0;color:#DCE8F2;max-width:560px;position:relative}
+  .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0 22px}
+  .fact{background:var(--bg);border-radius:8px;padding:14px 14px 12px}
+  .fact .ic{width:30px;height:30px;border-radius:50%;background:var(--sky-50);color:var(--blue);display:grid;place-items:center;margin-bottom:8px}
+  .fact b{display:block;font:600 15px var(--font-h);color:var(--navy)}
+  .fact span{font-size:13px;color:var(--muted)}
+  .privacy{font-size:13px;color:var(--muted);border-left:3px solid var(--green);padding:4px 0 4px 12px;margin:0 0 6px}
+
+  /* Questions */
+  fieldset{border:0;margin:0 0 26px;padding:0;min-width:0}
+  legend{font:600 16.5px/1.4 var(--font-h);color:var(--navy);padding:0;margin-bottom:4px}
+  .hint{font-size:13.5px;color:var(--muted);margin:0 0 12px}
+  .req{color:var(--sky)}
+  .opts{display:grid;gap:8px}
+  .opts.two{grid-template-columns:1fr 1fr}
+  .opt{position:relative;display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border:1.5px solid var(--line);border-radius:8px;cursor:pointer;background:#fff;transition:border-color .15s,background .15s,box-shadow .15s}
+  .opt:hover{border-color:var(--sky)}
+  .opt input{position:absolute;opacity:0;pointer-events:none}
+  .opt .mark{flex:0 0 20px;width:20px;height:20px;margin-top:1px;border:2px solid #A9B6C3;background:#fff;display:grid;place-items:center;transition:all .15s}
+  .opt input[type=radio]+.mark{border-radius:50%}
+  .opt input[type=checkbox]+.mark{border-radius:5px}
+  .opt input:checked+.mark{border-color:var(--blue);background:var(--blue)}
+  .opt input[type=radio]:checked+.mark:after{content:"";width:8px;height:8px;border-radius:50%;background:#fff}
+  .opt input[type=checkbox]:checked+.mark:after{content:"";width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+  .opt:has(input:checked){border-color:var(--blue);background:var(--sky-50)}
+  .opt input:focus-visible+.mark{box-shadow:0 0 0 3px var(--sky-100)}
+  .opt .txt{flex:1;font-size:15px}
+  .opt .txt small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+  .opt.disabled{opacity:.45;cursor:not-allowed}
+  .other-input{margin-top:8px;display:none}
+  .other-input.show{display:block}
+  input[type=text],input[type=email],textarea{width:100%;font:15px var(--font-b);color:var(--ink);padding:11px 13px;border:1.5px solid var(--line);border-radius:8px;background:#fff;transition:border-color .15s,box-shadow .15s}
+  input[type=text]:focus,input[type=email]:focus,textarea:focus{outline:0;border-color:var(--sky);box-shadow:0 0 0 3px var(--sky-100)}
+  textarea{min-height:96px;resize:vertical}
+  .counter{font:600 12px var(--font-h);color:var(--blue);margin-left:6px}
+
+  /* Level scale */
+  .levels .opt{align-items:center}
+  .lvl{flex:0 0 34px;height:34px;border-radius:50%;background:var(--bg);color:var(--navy);font:700 15px var(--font-h);display:grid;place-items:center}
+  .levels .opt:has(input:checked) .lvl{background:var(--blue);color:#fff}
+  .levels .mark{display:none!important}
+
+  /* Task matrix */
+  .matrix{border:1.5px solid var(--line);border-radius:8px;overflow:hidden}
+  .mrow{display:grid;grid-template-columns:1fr 132px 132px;align-items:center;border-top:1px solid var(--line-2)}
+  .mrow:first-child{border-top:0}
+  .mrow.head{background:var(--bg);font:600 12.5px/1.3 var(--font-h);color:var(--navy);text-align:center}
+  .mrow.head div{padding:10px 8px}
+  .mrow.head div:first-child{text-align:left;padding-left:14px}
+  .mtask{padding:11px 14px;font-size:14.5px}
+  .mcell{display:flex;justify-content:center;padding:6px}
+  .chip{position:relative;cursor:pointer}
+  .chip input{position:absolute;opacity:0;pointer-events:none}
+  .chip span{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1.5px solid var(--line);border-radius:99px;font:500 13px var(--font-h);color:var(--muted);background:#fff;transition:all .15s;white-space:nowrap}
+  .chip span:before{content:"";width:14px;height:14px;border-radius:4px;border:2px solid #A9B6C3;box-sizing:border-box}
+  .chip input:checked+span{border-color:var(--blue);background:var(--sky-50);color:var(--navy)}
+  .chip input:checked+span:before{background:var(--blue);border-color:var(--blue);box-shadow:inset 0 0 0 2px #fff}
+  .chip.green input:checked+span{border-color:var(--green-d);background:var(--green-50)}
+  .chip.green input:checked+span:before{background:var(--green-d);border-color:var(--green-d)}
+  .chip input:focus-visible+span{box-shadow:0 0 0 3px var(--sky-100)}
+  .chip.disabled span{opacity:.4;cursor:not-allowed}
+  .chip .short{display:none}
+
+  /* Scenario */
+  .scenario{display:block;width:100%;background:var(--bg);border-radius:8px;padding:16px 18px;margin:0 0 12px;border-left:4px solid var(--sky)}
+  .scenario .sc-q{display:block;margin-top:4px;font:400 15.5px/1.5 var(--font-b);color:var(--ink)}
+  .scenario .tag{font:700 11px var(--font-h);letter-spacing:.1em;text-transform:uppercase;color:var(--blue)}
+  .note{display:flex;gap:10px;align-items:flex-start;background:var(--green-50);border-radius:8px;padding:12px 14px;font-size:14px;color:#3B5A22;margin:0 0 22px}
+
+  /* Errors */
+  .error-msg{display:none;color:var(--err);font-size:13.5px;margin-top:8px}
+  fieldset.invalid .error-msg{display:block}
+  fieldset.invalid .opt,fieldset.invalid .matrix{border-color:#E3A29D}
+
+  /* Nav */
+  .nav{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 36px;border-top:1px solid var(--line-2);background:#FBFCFD}
+  .btn{appearance:none;border:0;border-radius:6px;padding:12px 22px;font:600 15px var(--font-h);cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:background .15s,transform .05s}
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{background:var(--blue);color:#fff}
+  .btn-primary:hover{background:var(--navy)}
+  .btn-green{background:var(--green-d);color:#fff}
+  .btn-green:hover{background:#3F7222}
+  .btn-ghost{background:transparent;color:var(--blue);padding-left:6px;padding-right:6px}
+  .btn-ghost:hover{text-decoration:underline}
+  .btn[disabled]{opacity:.6;cursor:wait}
+  .nav .spacer{flex:1}
+  .send-error{display:none;color:var(--err);font-size:14px;padding:0 36px 16px;background:#FBFCFD}
+  .send-error.show{display:block}
+
+  /* Thanks */
+  .thanks{text-align:center;padding:52px 36px 46px}
+  .thanks .check{width:72px;height:72px;border-radius:50%;background:var(--green-50);color:var(--green-d);display:grid;place-items:center;margin:0 auto 18px}
+  .thanks p{max-width:520px;margin:0 auto 10px;color:#4A5866}
+
+  footer{max-width:820px;margin:0 auto;padding:0 20px 36px;font-size:12.5px;color:var(--muted);text-align:center}
+  footer a{color:var(--muted)}
+
+  @media (max-width:640px){
+    .step{padding:24px 18px 20px}
+    .hero{padding:28px 18px 24px}
+    h1{font-size:24px} h2{font-size:20px}
+    .facts{grid-template-columns:1fr;gap:8px}
+    .fact{display:flex;gap:12px;align-items:center;padding:10px 12px}
+    .fact .ic{margin:0;flex:0 0 30px}
+    .opts.two{grid-template-columns:1fr}
+    .nav{padding:14px 18px}
+    .send-error{padding:0 18px 14px}
+    .client{font-size:11px}.client b{font-size:12px}
+    .logo img{height:32px}
+    .mrow{grid-template-columns:1fr 64px 64px}
+    .mrow.head div{font-size:11px;padding:8px 4px}
+    .mtask{padding:10px 12px;font-size:14px}
+    .chip span{padding:6px 8px}
+    .chip .long{display:none}.chip .short{display:inline}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="logo" href="https://beszerzes.hu" target="_blank" rel="noopener" aria-label="Beszerzés.hu">
+      <img src="https://beszerzes.hu/wp-content/uploads/2023/12/beszerzes.hu_logo.png" alt="Beszerzés.hu" onerror="this.parentNode.classList.add('noimg')">
+      <span class="wordmark">BESZERZÉS.HU</span>
+    </a>
+    <div class="client"><b>ALTEO beszerzés</b>AI-felmérés a tréning előtt<span class="test-badge" title="A beküldési cím (SCRIPT_URL) még nincs beállítva">TESZT MÓD</span></div>
+  </div>
+</header>
+
+<div class="progress-wrap" id="progress" hidden>
+  <div class="progress-meta"><span><strong id="stepNo">1</strong> / <span id="stepTotal">6</span> &nbsp;·&nbsp; <span id="stepName"></span></span><span id="stepTime"></span></div>
+  <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Kitöltés állapota"><span id="barFill"></span></div>
+</div>
+
+<main>
+<form id="survey" class="card" novalidate>
+
+  <!-- 0 · BEVEZETŐ -->
+  <section class="step active" data-name="Bevezető" style="padding:0">
+    <div class="hero">
+      <p class="eyebrow">ALTEO × Beszerzés.hu</p>
+      <h1>Mesterséges intelligencia a beszerzésben</h1>
+      <p>Az ALTEO beszerzési csapatának szóló AI-tréninget a ti munkátokra szabjuk. Ehhez szeretnénk megtudni, hol tartotok most: milyen eszközöket használtok, mire, és mit vártok a képzéstől.</p>
+    </div>
+    <div style="padding:6px 36px 28px" class="intro-body">
+      <div class="facts">
+        <div class="fact"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><b>Kb. 5 perc</b><span>15 rövid kérdés, főleg kattintós</span></div></div>
+        <div class="fact"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div><div><b>Névtelen</b><span>A név megadása nem kötelező</span></div></div>
+        <div class="fact"><div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg></div><div><b>Nincs rossz válasz</b><span>Ez nem vizsga, csak helyzetkép</span></div></div>
+      </div>
+      <p class="privacy">A válaszokat a Beszerzés.hu kizárólag a tréning összeállításához használja fel, összesítve kezeli, és harmadik félnek nem adja át. A kitöltés önkéntes; a válaszaidat a böngésződ a beküldésig ideiglenesen megjegyzi, így ha félbehagyod, később folytathatod.</p>
+    </div>
+  </section>
+
+  <!-- 1 · RÓLAD -->
+  <section class="step" data-name="Rólad">
+    <p class="eyebrow">1. rész</p>
+    <h2>Rólad és a munkádról</h2>
+    <p class="lead">Csak annyit kérdezünk, amennyi a csoportok és a példák összeállításához kell.</p>
+
+    <fieldset data-key="01 Szerepkör" data-required>
+      <legend>Mi a szerepköröd? <span class="req">*</span></legend>
+      <div class="opts two">
+        <label class="opt"><input type="radio" name="szerepkor" value="Beszerző"><span class="mark"></span><span class="txt">Beszerző</span></label>
+        <label class="opt"><input type="radio" name="szerepkor" value="Kategóriamenedzser / senior beszerző"><span class="mark"></span><span class="txt">Kategóriamenedzser / senior beszerző</span></label>
+        <label class="opt"><input type="radio" name="szerepkor" value="Beszerzési vezető"><span class="mark"></span><span class="txt">Beszerzési vezető</span></label>
+        <label class="opt"><input type="radio" name="szerepkor" value="Beszerzési asszisztens / adminisztráció"><span class="mark"></span><span class="txt">Beszerzési asszisztens / adminisztráció</span></label>
+        <label class="opt"><input type="radio" name="szerepkor" value="Egyéb" data-other="szerepkor_egyeb"><span class="mark"></span><span class="txt">Egyéb</span></label>
+      </div>
+      <input type="text" class="other-input" id="szerepkor_egyeb" placeholder="Milyen szerepkör?" maxlength="120">
+      <p class="error-msg">Kérjük, válassz egy lehetőséget.</p>
+    </fieldset>
+
+    <fieldset data-key="02 Beszerzési terület" data-required data-max="3">
+      <legend>Milyen területen beszerzel leginkább? <span class="req">*</span><span class="counter" aria-live="polite"></span></legend>
+      <p class="hint">Legfeljebb 3-at jelölj be.</p>
+      <div class="opts two">
+        <label class="opt"><input type="checkbox" name="terulet" value="Erőművi / üzemi karbantartás, alkatrész"><span class="mark"></span><span class="txt">Erőművi / üzemi karbantartás, alkatrész</span></label>
+        <label class="opt"><input type="checkbox" name="terulet" value="Energetikai berendezések, gépek"><span class="mark"></span><span class="txt">Energetikai berendezések, gépek <small>pl. napelem, tároló, motor, kazán</small></span></label>
+        <label class="opt"><input type="checkbox" name="terulet" value="Építés, beruházás"><span class="mark"></span><span class="txt">Építés, beruházás, projektbeszerzés</span></label>
+        <label class="opt"><input type="checkbox" name="terulet" value="IT, szoftver, távközlés"><span class="mark"></span><span class="txt">IT, szoftver, távközlés</span></label>
+        <label class="opt"><input type="checkbox" name="terulet" value="Szolgáltatások"><span class="mark"></span><span class="txt">Szolgáltatások <small>tanácsadás, facility, őrzés, takarítás</small></span></label>
+        <label class="opt"><input type="checkbox" name="terulet" value="Logisztika, flotta, üzemanyag"><span class="mark"></span><span class="txt">Logisztika, flotta, üzemanyag</span></label>
+        <label class="opt"><input type="checkbox" name="terulet" value="Általános / indirekt beszerzés"><span class="mark"></span><span class="txt">Általános / indirekt <small>irodaszer, rendezvény, marketing</small></span></label>
+        <label class="opt"><input type="checkbox" name="terulet" value="Egyéb" data-other="terulet_egyeb"><span class="mark"></span><span class="txt">Egyéb</span></label>
+      </div>
+      <input type="text" class="other-input" id="terulet_egyeb" placeholder="Milyen terület?" maxlength="160">
+      <p class="error-msg">Kérjük, jelölj be legalább egy területet.</p>
+    </fieldset>
+  </section>
+
+  <!-- 2 · AI MA -->
+  <section class="step" data-name="AI-használat ma">
+    <p class="eyebrow">2. rész</p>
+    <h2>Hogyan használod ma az AI-t?</h2>
+    <p class="lead">Munkában és magánéletben egyaránt számít, a lényeg, hogy mennyire vagy otthon benne.</p>
+
+    <fieldset data-key="03 Használati gyakoriság" data-required>
+      <legend>Milyen gyakran használsz AI-eszközt (pl. ChatGPT, Copilot)? <span class="req">*</span></legend>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="gyakorisag" value="Még nem használtam"><span class="mark"></span><span class="txt">Még nem használtam</span></label>
+        <label class="opt"><input type="radio" name="gyakorisag" value="Néhányszor kipróbáltam"><span class="mark"></span><span class="txt">Néhányszor kipróbáltam</span></label>
+        <label class="opt"><input type="radio" name="gyakorisag" value="Havonta néhányszor"><span class="mark"></span><span class="txt">Havonta néhányszor</span></label>
+        <label class="opt"><input type="radio" name="gyakorisag" value="Hetente többször"><span class="mark"></span><span class="txt">Hetente többször</span></label>
+        <label class="opt"><input type="radio" name="gyakorisag" value="Naponta"><span class="mark"></span><span class="txt">Naponta, a munkám része</span></label>
+      </div>
+      <p class="error-msg">Kérjük, válassz egy lehetőséget.</p>
+    </fieldset>
+
+    <fieldset data-key="04 Használt eszközök" data-required>
+      <legend>Milyen AI-eszközöket használtál már? <span class="req">*</span></legend>
+      <p class="hint">Több is jelölhető.</p>
+      <div class="opts two">
+        <label class="opt"><input type="checkbox" name="eszkozok" value="M365 Copilot Chat (céges fiókkal)"><span class="mark"></span><span class="txt">Microsoft 365 Copilot Chat <small>céges fiókkal, böngészőben / Teamsben</small></span></label>
+        <label class="opt"><input type="checkbox" name="eszkozok" value="M365 Copilot licenc (Word, Excel, Outlook)"><span class="mark"></span><span class="txt">Microsoft 365 Copilot licenc <small>Wordbe, Excelbe, Outlookba építve</small></span></label>
+        <label class="opt"><input type="checkbox" name="eszkozok" value="ChatGPT ingyenes"><span class="mark"></span><span class="txt">ChatGPT – ingyenes</span></label>
+        <label class="opt"><input type="checkbox" name="eszkozok" value="ChatGPT fizetős"><span class="mark"></span><span class="txt">ChatGPT – fizetős (Plus / Team)</span></label>
+        <label class="opt"><input type="checkbox" name="eszkozok" value="Google Gemini"><span class="mark"></span><span class="txt">Google Gemini</span></label>
+        <label class="opt"><input type="checkbox" name="eszkozok" value="Claude"><span class="mark"></span><span class="txt">Claude</span></label>
+        <label class="opt"><input type="checkbox" name="eszkozok" value="Perplexity"><span class="mark"></span><span class="txt">Perplexity</span></label>
+        <label class="opt"><input type="checkbox" name="eszkozok" value="DeepL / AI-fordító"><span class="mark"></span><span class="txt">DeepL / AI-fordító</span></label>
+        <label class="opt"><input type="checkbox" name="eszkozok" value="Egyéb" data-other="eszkozok_egyeb"><span class="mark"></span><span class="txt">Egyéb</span></label>
+        <label class="opt"><input type="checkbox" name="eszkozok" value="Egyiket sem" data-exclusive><span class="mark"></span><span class="txt">Egyiket sem</span></label>
+      </div>
+      <input type="text" class="other-input" id="eszkozok_egyeb" placeholder="Melyik eszköz(ök)?" maxlength="160">
+      <p class="error-msg">Kérjük, jelölj be legalább egy lehetőséget (vagy az „Egyiket sem”-et).</p>
+    </fieldset>
+
+    <fieldset data-key="05 Önértékelés (1-5)" data-required class="levels">
+      <legend>Hol tartasz most az AI-használatban? <span class="req">*</span></legend>
+      <p class="hint">Válaszd azt, amelyik a legjobban illik rád.</p>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="szint" value="1 – Kezdő"><span class="mark"></span><span class="lvl">1</span><span class="txt"><b>Kezdő</b><small>Még nem, vagy csak alig próbáltam.</small></span></label>
+        <label class="opt"><input type="radio" name="szint" value="2 – Ismerkedő"><span class="mark"></span><span class="lvl">2</span><span class="txt"><b>Ismerkedő</b><small>Néha kérdezek tőle, nagyjából úgy, mint egy keresőtől.</small></span></label>
+        <label class="opt"><input type="radio" name="szint" value="3 – Rendszeres"><span class="mark"></span><span class="lvl">3</span><span class="txt"><b>Rendszeres</b><small>Munkához is használom: e-mail, összefoglaló, fordítás.</small></span></label>
+        <label class="opt"><input type="radio" name="szint" value="4 – Haladó"><span class="mark"></span><span class="lvl">4</span><span class="txt"><b>Haladó</b><small>Tudatosan promptolok, fájlokat elemeztetek, és ellenőrzöm a válaszokat.</small></span></label>
+        <label class="opt"><input type="radio" name="szint" value="5 – Profi"><span class="mark"></span><span class="lvl">5</span><span class="txt"><b>Profi</b><small>Saját sablonokat, asszisztenseket (pl. GPT-ket, Copilot-ügynököket) vagy automatizálást építek.</small></span></label>
+      </div>
+      <p class="error-msg">Kérjük, válassz egy szintet.</p>
+    </fieldset>
+  </section>
+
+  <!-- 3 · FELADATTÉRKÉP -->
+  <section class="step" data-name="Feladattérkép">
+    <p class="eyebrow">3. rész</p>
+    <h2>Hol megy el az időd?</h2>
+    <p class="lead">Ebből látjuk, hol hozhatja a legtöbbet az AI, és mely feladatokra építsük a gyakorlatokat.</p>
+
+    <fieldset data-key="06 Legtöbb időt vivő feladatok" data-group="matrix" data-required data-max="3" data-for="ido">
+      <legend>Melyik az a <u>max. 3</u> feladat, ami a legtöbb idődet viszi, és melyikhez használsz <u>már most</u> AI-t? <span class="req">*</span><span class="counter" aria-live="polite"></span></legend>
+      <p class="hint">Az első oszlopban legalább egyet jelölj be. A második oszlop nem kötelező.</p>
+      <div class="matrix" id="matrix"></div>
+      <p class="error-msg">Kérjük, az első oszlopban jelölj be legalább egy feladatot.</p>
+    </fieldset>
+    <fieldset data-key="07 Feladatok, amihez már használ AI-t" hidden data-for="ai"></fieldset>
+  </section>
+
+  <!-- 4 · KERETEK -->
+  <section class="step" data-name="Céges keretek">
+    <p class="eyebrow">4. rész</p>
+    <h2>Céges keretek és adatbiztonság</h2>
+    <p class="lead">A tréningen csak olyan megoldásokat mutatunk, amelyeket nálatok valóban használhattok.</p>
+
+    <fieldset data-key="08 AI-szabályzat" data-required>
+      <legend>Van az ALTEO-nál AI-használati szabályzat vagy irányelv? <span class="req">*</span></legend>
+      <div class="opts two">
+        <label class="opt"><input type="radio" name="szabalyzat" value="Van, és ismerem"><span class="mark"></span><span class="txt">Van, és ismerem</span></label>
+        <label class="opt"><input type="radio" name="szabalyzat" value="Van, de nem ismerem részletesen"><span class="mark"></span><span class="txt">Van, de nem ismerem részletesen</span></label>
+        <label class="opt"><input type="radio" name="szabalyzat" value="Nincs"><span class="mark"></span><span class="txt">Tudomásom szerint nincs</span></label>
+        <label class="opt"><input type="radio" name="szabalyzat" value="Nem tudom"><span class="mark"></span><span class="txt">Nem tudom</span></label>
+      </div>
+      <p class="error-msg">Kérjük, válassz egy lehetőséget.</p>
+    </fieldset>
+
+    <fieldset data-key="09 Céges szinten elérhető eszköz">
+      <legend>Milyen AI-eszköz érhető el nálatok céges szinten?</legend>
+      <p class="hint">Több is jelölhető.</p>
+      <div class="opts two">
+        <label class="opt"><input type="checkbox" name="ceges_eszkoz" value="M365 Copilot Chat"><span class="mark"></span><span class="txt">Microsoft 365 Copilot Chat</span></label>
+        <label class="opt"><input type="checkbox" name="ceges_eszkoz" value="M365 Copilot licenc"><span class="mark"></span><span class="txt">Microsoft 365 Copilot licenc</span></label>
+        <label class="opt"><input type="checkbox" name="ceges_eszkoz" value="ChatGPT Team / Enterprise"><span class="mark"></span><span class="txt">ChatGPT Team / Enterprise</span></label>
+        <label class="opt"><input type="checkbox" name="ceges_eszkoz" value="Saját céges AI-megoldás"><span class="mark"></span><span class="txt">Saját, belső céges AI-megoldás</span></label>
+        <label class="opt"><input type="checkbox" name="ceges_eszkoz" value="Egyéb" data-other="ceges_eszkoz_egyeb"><span class="mark"></span><span class="txt">Egyéb</span></label>
+        <label class="opt"><input type="checkbox" name="ceges_eszkoz" value="Nem tudom / nincs" data-exclusive><span class="mark"></span><span class="txt">Nem tudom / nincs</span></label>
+      </div>
+      <input type="text" class="other-input" id="ceges_eszkoz_egyeb" placeholder="Melyik eszköz?" maxlength="160">
+    </fieldset>
+
+    <fieldset data-key="10 Mi tart vissza" data-required data-max="2">
+      <legend>Mi tart vissza leginkább attól, hogy (többet) használd az AI-t a munkádban? <span class="req">*</span><span class="counter" aria-live="polite"></span></legend>
+      <p class="hint">Legfeljebb 2-t jelölj be.</p>
+      <div class="opts two">
+        <label class="opt"><input type="checkbox" name="akadaly" value="Adatbiztonság, titoktartás"><span class="mark"></span><span class="txt">Adatbiztonság, titoktartás</span></label>
+        <label class="opt"><input type="checkbox" name="akadaly" value="Nem bízom a válaszok pontosságában"><span class="mark"></span><span class="txt">Nem bízom a válaszok pontosságában</span></label>
+        <label class="opt"><input type="checkbox" name="akadaly" value="Nem tudom, hogyan kérdezzek jól"><span class="mark"></span><span class="txt">Nem tudom, hogyan kérdezzek jól</span></label>
+        <label class="opt"><input type="checkbox" name="akadaly" value="Nincs időm megtanulni"><span class="mark"></span><span class="txt">Nincs időm megtanulni</span></label>
+        <label class="opt"><input type="checkbox" name="akadaly" value="Nincs engedélyezett eszköz"><span class="mark"></span><span class="txt">Nincs engedélyezett / elérhető eszköz</span></label>
+        <label class="opt"><input type="checkbox" name="akadaly" value="Semmi, már rendszeresen használom" data-exclusive><span class="mark"></span><span class="txt">Semmi, már rendszeresen használom</span></label>
+      </div>
+      <p class="error-msg">Kérjük, jelölj be legalább egy lehetőséget.</p>
+    </fieldset>
+  </section>
+
+  <!-- 5 · HELYZETEK -->
+  <section class="step" data-name="Két rövid helyzet">
+    <p class="eyebrow">5. rész</p>
+    <h2>Két rövid helyzet</h2>
+    <div class="note"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" style="flex:0 0 18px;margin-top:2px"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg><span>Ez nem vizsga, és nem értékelünk egyénenként. Arra figyelj, mit tennél <b>valójában</b>, nem arra, hogy mi a „szép” válasz.</span></div>
+
+    <fieldset data-key="11 Helyzet 1 – adatok" data-required>
+      <legend class="scenario"><span class="tag">1. helyzet</span><span class="sc-q">Három beérkezett ajánlatot szeretnél gyorsan összevetni egy AI-chatbot segítségével. Mit teszel?</span></legend>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="helyzet1" value="A – teljes ajánlatok bemásolása bármilyen chatbotba"><span class="mark"></span><span class="txt">Bemásolom vagy feltöltöm az ajánlatokat úgy, ahogy vannak, abba a chatbotba, amelyik épp kéznél van.</span></label>
+        <label class="opt"><input type="radio" name="helyzet1" value="B – csak a szállítóneveket takarja ki"><span class="mark"></span><span class="txt">A szállítók nevét kitakarom, a többit (árak, feltételek) változatlanul feltöltöm bármelyik chatbotba.</span></label>
+        <label class="opt"><input type="radio" name="helyzet1" value="C – céges eszköz vagy anonimizálás (helyes)"><span class="mark"></span><span class="txt">Csak céges, engedélyezett eszközt használok, vagy ha az nincs, előtte anonimizálom az anyagot.</span></label>
+        <label class="opt"><input type="radio" name="helyzet1" value="D – nem tudja"><span class="mark"></span><span class="txt">Nem tudom, mi lenne itt a helyes.</span></label>
+      </div>
+      <p class="error-msg">Kérjük, válassz egy lehetőséget.</p>
+    </fieldset>
+
+    <fieldset data-key="12 Helyzet 2 – ellenőrzés" data-required>
+      <legend class="scenario"><span class="tag">2. helyzet</span><span class="sc-q">Az AI ad egy listát 5 lehetséges hazai szállítóval, elérhetőségekkel és referenciákkal. Mi a következő lépésed?</span></legend>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="helyzet2" value="A – azonnal felveszi a listára"><span class="mark"></span><span class="txt">Felveszem őket a szállítói listára és megkeresem őket, hiszen az AI konkrét adatokat adott.</span></label>
+        <label class="opt"><input type="radio" name="helyzet2" value="B – forrásból ellenőrzi (helyes)"><span class="mark"></span><span class="txt">Először ellenőrzöm, hogy a cégek léteznek-e, és az adatok stimmelnek-e (pl. cégjegyzék, honlap).</span></label>
+        <label class="opt"><input type="radio" name="helyzet2" value="C – visszakérdez az AI-nál"><span class="mark"></span><span class="txt">Megkérdezem az AI-t, hogy biztos-e benne. Ha igent mond, elfogadom.</span></label>
+        <label class="opt"><input type="radio" name="helyzet2" value="D – nem tudja"><span class="mark"></span><span class="txt">Nem tudom, mi lenne itt a helyes.</span></label>
+      </div>
+      <p class="error-msg">Kérjük, válassz egy lehetőséget.</p>
+    </fieldset>
+  </section>
+
+  <!-- 6 · CHATBOT ÉS TRÉNING -->
+  <section class="step" data-name="Chatbot és tréning">
+    <p class="eyebrow">6. rész</p>
+    <h2>Mire használnád, és mit vársz a tréningtől?</h2>
+    <p class="lead">Az utolsó lépés: ebből állítjuk össze a gyakorlatokat.</p>
+
+    <fieldset data-key="13 Mire használná a chatbotot" data-required>
+      <legend>Mire használnád szívesen az AI-chatbotot a munkádban? <span class="req">*</span></legend>
+      <p class="hint">Több is jelölhető.</p>
+      <div class="opts two">
+        <label class="opt"><input type="checkbox" name="chatbot" value="Specifikáció, ajánlatkérő levél írása"><span class="mark"></span><span class="txt">Specifikáció, ajánlatkérő levél megírása</span></label>
+        <label class="opt"><input type="checkbox" name="chatbot" value="Ajánlatok összevetése, ártükör"><span class="mark"></span><span class="txt">Ajánlatok összevetése, ártükör készítése</span></label>
+        <label class="opt"><input type="checkbox" name="chatbot" value="Szerződések átnézése, eltérések kiemelése"><span class="mark"></span><span class="txt">Szerződések átnézése, eltérések kiemelése</span></label>
+        <label class="opt"><input type="checkbox" name="chatbot" value="Szállítókeresés, piackutatás"><span class="mark"></span><span class="txt">Szállítókeresés, piackutatás</span></label>
+        <label class="opt"><input type="checkbox" name="chatbot" value="Tárgyalásra felkészülés"><span class="mark"></span><span class="txt">Tárgyalásra felkészülés <small>érvek, ellenérvek, szerepjáték</small></span></label>
+        <label class="opt"><input type="checkbox" name="chatbot" value="Riportok, Excel-elemzések"><span class="mark"></span><span class="txt">Riportok, Excel-elemzések</span></label>
+        <label class="opt"><input type="checkbox" name="chatbot" value="E-mailek megfogalmazása, fordítás"><span class="mark"></span><span class="txt">E-mailek megfogalmazása, fordítás</span></label>
+        <label class="opt"><input type="checkbox" name="chatbot" value="Belső szabályzatok, folyamatok kikeresése"><span class="mark"></span><span class="txt">Belső szabályzatok, folyamatleírások gyors kikeresése</span></label>
+        <label class="opt"><input type="checkbox" name="chatbot" value="Egyéb" data-other="chatbot_egyeb"><span class="mark"></span><span class="txt">Egyéb</span></label>
+      </div>
+      <input type="text" class="other-input" id="chatbot_egyeb" placeholder="Mire még?" maxlength="200">
+      <p class="error-msg">Kérjük, jelölj be legalább egy lehetőséget.</p>
+    </fieldset>
+
+    <fieldset data-key="14 Elvárás a tréningtől">
+      <legend>Mit vársz leginkább a tréningtől? Mi az, amit a végére mindenképp szeretnél tudni?</legend>
+      <textarea name="elvaras" maxlength="1500" placeholder="Pl. „Szeretném, ha az ajánlatok összevetését fele annyi idő alatt meg tudnám csinálni.”"></textarea>
+    </fieldset>
+
+    <fieldset data-key="15 Valós anyag megosztása" data-required>
+      <legend>Megosztanál előre <u>anonimizált</u> valós munkaanyagot (pl. specifikációt, ajánlatot, szerződésrészletet), hogy a gyakorlatok a saját munkátokra épüljenek? <span class="req">*</span></legend>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="anyag" value="Igen"><span class="mark"></span><span class="txt">Igen, szívesen</span></label>
+        <label class="opt"><input type="radio" name="anyag" value="Talán – egyeztetni kell"><span class="mark"></span><span class="txt">Talán, előbb egyeztetnem kell a vezetőmmel</span></label>
+        <label class="opt"><input type="radio" name="anyag" value="Nem"><span class="mark"></span><span class="txt">Nem</span></label>
+      </div>
+      <p class="error-msg">Kérjük, válassz egy lehetőséget.</p>
+    </fieldset>
+
+    <fieldset data-key="16 Név (opcionális)">
+      <legend>Név és e-mail <span style="font-weight:400;color:var(--muted)">(nem kötelező)</span></legend>
+      <p class="hint">Csak akkor add meg, ha szeretnéd, hogy a tréning előtt felvegyük veled a kapcsolatot, például a megosztott anyag miatt.</p>
+      <div class="opts two">
+        <input type="text" name="nev" placeholder="Név" maxlength="120" autocomplete="name">
+        <input type="email" name="email" placeholder="E-mail-cím" maxlength="160" autocomplete="email" data-key="17 E-mail (opcionális)">
+      </div>
+      <p class="error-msg" id="emailErr">Az e-mail-cím formátuma nem megfelelő.</p>
+    </fieldset>
+  </section>
+
+  <!-- KÖSZÖNJÜK -->
+  <section class="step thanks" data-name="Kész" data-final>
+    <div class="check"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></div>
+    <h2>Köszönjük a válaszaidat!</h2>
+    <p>Segítesz vele abban, hogy a tréning a ti valós feladataitokról szóljon, ne általánosságokról.</p>
+    <p style="font-size:14px">Ha kérdésed van, írj nekünk a <a href="https://beszerzes.hu" target="_blank" rel="noopener">beszerzes.hu</a> oldalon található elérhetőségen. Ezt az ablakot most már bezárhatod.</p>
+  </section>
+
+  <div class="send-error" id="sendError" role="alert">A beküldés nem sikerült. Ellenőrizd az internetkapcsolatot, majd próbáld újra. A válaszaid nem vesztek el.</div>
+  <div class="nav" id="nav">
+    <button type="button" class="btn btn-ghost" id="prevBtn">‹ Vissza</button>
+    <span class="spacer"></span>
+    <button type="button" class="btn btn-primary" id="nextBtn">Kezdjük <span aria-hidden="true">›</span></button>
+  </div>
+</form>
+</main>
+
+<footer>
+  © Beszerzés.hu – a beszerzési döntéshozók szakportálja · <a href="https://beszerzes.hu" target="_blank" rel="noopener">beszerzes.hu</a>
+</footer>
+
+<noscript><p style="text-align:center;color:#B3261E">A kérdőív kitöltéséhez engedélyezd a JavaScriptet a böngésződben.</p></noscript>
+
+<script>
+/* ============================================================
+   BEÁLLÍTÁS – ide kerül a Google Apps Script webalkalmazás URL-je
+   (Telepítés → Webalkalmazás → URL, ami /exec-re végződik).
+   Ha üres, a kérdőív TESZT MÓDBAN fut: nem küld adatot, csak
+   a böngésző konzoljára írja ki.
+   ============================================================ */
+const SCRIPT_URL = "";
+const SURVEY_ID  = "alteo-ai-felmeres-2026";
+
+(function(){
+  const form = document.getElementById('survey');
+  const steps = [...form.querySelectorAll('.step')];
+  const qSteps = steps.filter((s,i)=>i>0 && !s.hasAttribute('data-final'));
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const nav = document.getElementById('nav');
+  const progress = document.getElementById('progress');
+  const sendError = document.getElementById('sendError');
+  const STORE = SURVEY_ID + ':draft';
+  const DONE = SURVEY_ID + ':done';
+  let startedAt = Date.now();
+  let current = 0;
+
+  if(!SCRIPT_URL) document.body.classList.add('is-test');
+
+  /* --- Feladattérkép mátrix felépítése --- */
+  const TASKS = [
+    'Igényfelmérés, specifikáció írása',
+    'Piackutatás, szállítókeresés',
+    'Ajánlatkérés (RFQ / RFP) összeállítása, kiküldése',
+    'Ajánlatok összevetése, értékelése, ártükör',
+    'Tárgyalás előkészítése',
+    'Szerződések átnézése, összevetése',
+    'Szállítóminősítés, kockázatelemzés',
+    'Riportok, kimutatások, prezentációk',
+    'Levelezés, adminisztráció',
+    'Megrendelések, számlák egyeztetése'
+  ];
+  const m = document.getElementById('matrix');
+  m.innerHTML = '<div class="mrow head"><div>Feladat</div><div>Sok időt visz<br><span style="font-weight:400">(max. 3)</span></div><div>Már használok<br>hozzá AI-t</div></div>' +
+    TASKS.map((t,i)=>`<div class="mrow"><div class="mtask" id="t${i}">${t}</div>
+      <div class="mcell"><label class="chip"><input type="checkbox" name="ido" value="${t}" aria-labelledby="t${i}" aria-describedby="hIdo"><span><b class="long">Sok idő</b><b class="short">Idő</b></span></label></div>
+      <div class="mcell"><label class="chip green"><input type="checkbox" name="ai" value="${t}" aria-labelledby="t${i}" aria-describedby="hAi"><span><b class="long">AI-t használok</b><b class="short">AI</b></span></label></div></div>`).join('');
+  m.insertAdjacentHTML('afterbegin','<span id="hIdo" class="sr-only">Sok időt visz</span><span id="hAi" class="sr-only">Már használok hozzá AI-t</span>');
+  m.querySelectorAll('.chip b').forEach(b=>b.style.fontWeight='500');
+
+  /* --- Segédfüggvények --- */
+  const fsInputs = fs => {
+    if(fs.dataset.group==='matrix') return [...form.querySelectorAll('input[name="ido"]')];
+    return [...fs.querySelectorAll('input[type=radio],input[type=checkbox]')];
+  };
+  const checkedIn = fs => fsInputs(fs).filter(i=>i.checked);
+
+  function updateLimits(fs){
+    const max = +fs.dataset.max || 0;
+    const inputs = fsInputs(fs);
+    const n = inputs.filter(i=>i.checked).length;
+    const counter = fs.querySelector('.counter');
+    if(counter) counter.textContent = max ? `${n}/${max}` : '';
+    if(!max) return;
+    inputs.forEach(i=>{
+      const lim = !i.checked && n>=max;
+      i.disabled = lim;
+      i.closest('.opt,.chip').classList.toggle('disabled', lim);
+    });
+  }
+
+  function syncOther(input){
+    const id = input.dataset.other; if(!id) return;
+    const box = document.getElementById(id);
+    box.classList.toggle('show', input.checked);
+    if(input.checked && document.activeElement===input) setTimeout(()=>box.focus(),0);
+  }
+
+  form.addEventListener('change', e=>{
+    const t = e.target;
+    const fs = t.closest('fieldset');
+    if(t.type==='checkbox' && fs){
+      const group = fsInputs(fs).filter(i=>i.name===t.name);
+      if(t.checked && t.hasAttribute('data-exclusive')) group.forEach(i=>{ if(i!==t){ i.checked=false; syncOther(i);} });
+      else if(t.checked) group.forEach(i=>{ if(i.hasAttribute('data-exclusive')) i.checked=false; });
+    }
+    if(t.type==='radio') form.querySelectorAll(`input[name="${t.name}"]`).forEach(syncOther);
+    else syncOther(t);
+    if(fs){ updateLimits(fs); fs.classList.remove('invalid'); }
+    save();
+  });
+  form.addEventListener('input', e=>{ if(e.target.matches('input[type=text],input[type=email],textarea')) save(); });
+
+  /* --- Validálás --- */
+  function validate(step){
+    let ok = true, first = null;
+    step.querySelectorAll('fieldset[data-required]').forEach(fs=>{
+      const bad = checkedIn(fs).length===0;
+      fs.classList.toggle('invalid', bad);
+      if(bad){ ok=false; first = first || fs; }
+    });
+    const email = step.querySelector('input[type=email]');
+    if(email && email.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim())){
+      const fs = email.closest('fieldset'); fs.classList.add('invalid'); ok=false; first = first || fs;
+    } else if(email){ email.closest('fieldset').classList.remove('invalid'); }
+    if(first) first.scrollIntoView({behavior:'smooth', block:'center'});
+    return ok;
+  }
+
+  /* --- Navigáció --- */
+  function show(i){
+    steps[current].classList.remove('active');
+    current = i;
+    const s = steps[current];
+    s.classList.add('active');
+    const isIntro = current===0, isFinal = s.hasAttribute('data-final');
+    progress.hidden = isIntro || isFinal;
+    nav.style.display = isFinal ? 'none' : '';
+    prevBtn.style.visibility = isIntro ? 'hidden' : 'visible';
+    const isLast = current===steps.length-2;
+    nextBtn.className = 'btn ' + (isLast ? 'btn-green' : 'btn-primary');
+    nextBtn.innerHTML = isIntro ? 'Kezdjük <span aria-hidden="true">›</span>' : isLast ? 'Beküldés <span aria-hidden="true">✓</span>' : 'Tovább <span aria-hidden="true">›</span>';
+    if(!isIntro && !isFinal){
+      const n = qSteps.indexOf(s)+1;
+      document.getElementById('stepNo').textContent = n;
+      document.getElementById('stepTotal').textContent = qSteps.length;
+      document.getElementById('stepName').textContent = s.dataset.name;
+      const left = Math.max(1, Math.round((qSteps.length - n + 1) * 0.85));
+      document.getElementById('stepTime').textContent = `kb. ${left} perc van hátra`;
+      document.getElementById('barFill').style.width = ((n-1)/qSteps.length*100)+'%';
+      document.querySelector('[role=progressbar]').setAttribute('aria-valuenow', Math.round((n-1)/qSteps.length*100));
+    }
+    sendError.classList.remove('show');
+    window.scrollTo({top:0, behavior:'smooth'});
+    const h = s.querySelector('h1,h2'); if(h){ h.setAttribute('tabindex','-1'); h.focus({preventScroll:true}); }
+    save();
+  }
+  prevBtn.addEventListener('click', ()=>{ if(current>0) show(current-1); });
+  nextBtn.addEventListener('click', ()=>{
+    if(!validate(steps[current])) return;
+    if(current===steps.length-2) submit(); else show(current+1);
+  });
+
+  /* --- Adatok összegyűjtése --- */
+  function collect(){
+    const out = {};
+    out['Beküldés ideje'] = new Date().toLocaleString('hu-HU',{timeZone:'Europe/Budapest'});
+    form.querySelectorAll('fieldset[data-key]').forEach(fs=>{
+      const key = fs.dataset.key;
+      if(fs.dataset.for==='ai'){
+        out[key] = [...form.querySelectorAll('input[name="ai"]:checked')].map(i=>i.value).join('; ');
+        return;
+      }
+      if(fs.dataset.group==='matrix'){
+        out[key] = [...form.querySelectorAll('input[name="ido"]:checked')].map(i=>i.value).join('; ');
+        return;
+      }
+      const choices = checkedIn(fs).map(i=>{
+        if(i.dataset.other){ const v=document.getElementById(i.dataset.other).value.trim(); return v ? `Egyéb: ${v}` : 'Egyéb'; }
+        return i.value;
+      });
+      if(choices.length || fsInputs(fs).length){ out[key] = choices.join('; '); return; }
+      const ta = fs.querySelector('textarea'); if(ta){ out[key] = ta.value.trim(); return; }
+      const nev = fs.querySelector('input[name=nev]'), em = fs.querySelector('input[name=email]');
+      if(nev){ out[key] = nev.value.trim(); out[em.dataset.key] = em.value.trim(); }
+    });
+    out['Kitöltési idő (perc)'] = Math.round((Date.now()-startedAt)/6000)/10;
+    out['Kérdőív'] = SURVEY_ID;
+    return out;
+  }
+
+  /* --- Mentés / visszatöltés (localStorage) --- */
+  function save(){
+    if(steps[current].hasAttribute('data-final')) return;
+    try{
+      const data = {step:current, t:startedAt, v:{}};
+      form.querySelectorAll('input,textarea').forEach(el=>{
+        const k = el.name || el.id; if(!k) return;
+        if(el.type==='radio'||el.type==='checkbox'){ if(el.checked) (data.v[k]=data.v[k]||[]).push(el.value); }
+        else if(el.value) data.v[k]=el.value;
+      });
+      localStorage.setItem(STORE, JSON.stringify(data));
+    }catch(e){}
+  }
+  function restore(){
+    try{
+      const data = JSON.parse(localStorage.getItem(STORE)||'null'); if(!data) return 0;
+      if(data.t) startedAt = data.t;
+      form.querySelectorAll('input,textarea').forEach(el=>{
+        const k = el.name || el.id, v = data.v[k]; if(v===undefined) return;
+        if(el.type==='radio'||el.type==='checkbox') el.checked = v.includes(el.value);
+        else el.value = v;
+      });
+      form.querySelectorAll('input[data-other]').forEach(syncOther);
+      form.querySelectorAll('fieldset').forEach(updateLimits);
+      return Math.min(data.step||0, steps.length-2);
+    }catch(e){ return 0; }
+  }
+
+  /* --- Beküldés --- */
+  async function submit(){
+    const payload = collect();
+    nextBtn.disabled = true; prevBtn.disabled = true;
+    nextBtn.innerHTML = 'Küldés…';
+    sendError.classList.remove('show');
+    try{
+      if(SCRIPT_URL){
+        await fetch(SCRIPT_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(payload)});
+      } else {
+        console.info('[TESZT MÓD] Ezt küldené a kérdőív:', payload);
+        window.__lastPayload = payload;
+        await new Promise(r=>setTimeout(r,500));
+      }
+      try{ localStorage.removeItem(STORE); localStorage.setItem(DONE, new Date().toISOString()); }catch(e){}
+      show(steps.length-1);
+    }catch(err){
+      console.error(err);
+      sendError.classList.add('show');
+      nextBtn.disabled = false; prevBtn.disabled = false;
+      nextBtn.innerHTML = 'Újrapróbálás <span aria-hidden="true">↻</span>';
+    }
+  }
+
+  /* --- Indítás --- */
+  form.addEventListener('submit', e=>e.preventDefault());
+  form.querySelectorAll('fieldset').forEach(updateLimits);
+  let done = null; try{ done = localStorage.getItem(DONE); }catch(e){}
+  const params = new URLSearchParams(location.search);
+  if(done && !params.has('ujra')){
+    const t = steps[steps.length-1];
+    t.querySelector('h2').textContent = 'Ezt a kérdőívet már kitöltötted – köszönjük!';
+    t.querySelector('p').textContent = 'Erről az eszközről már beérkezett egy kitöltés. Ha valaki más is ezen a gépen töltené ki, nyissa meg a linket „?ujra” végződéssel.';
+    show(steps.length-1);
+  } else {
+    show(restore());
+  }
+})();
+</script>
+</body>
+</html>
